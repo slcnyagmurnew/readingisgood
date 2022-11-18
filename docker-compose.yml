@@ -1,0 +1,52 @@
+version: '3'
+services:
+  rig:
+    build: .
+    image: 'rig-image'
+    container_name: 'rig'
+    restart: always
+    ports:
+      - '9090:9090'
+    privileged: True
+    environment:
+      - MONGO_USERNAME=admin
+      - MONGO_PASSWORD=admin
+      - MONGO_DATABASE=readingisgood
+      - MONGO_HOST=database-rig
+      - MONGO_PORT=27017
+    depends_on:
+      - database-rig
+
+  database-rig:
+    image: 'mongo:4.4.6'
+    container_name: database-rig
+    environment:
+      - MONGO_INITDB_DATABASE=readingisgood
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    restart: always
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./mongo-data:/data/db
+
+  database-rig-visualizer:
+    image: 'mongo-express'
+    container_name: database-rig-visualizer
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=database-rig
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_MONGODB_AUTH_DATABASE=admin
+      - ME_CONFIG_MONGODB_AUTH_USERNAME=admin
+      - ME_CONFIG_MONGODB_AUTH_PASSWORD=admin
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=admin
+    restart: always
+    ports:
+      - '8081:8081'
+    volumes:
+      - ./mongo-data:/data/db
+    depends_on:
+      - database-rig
