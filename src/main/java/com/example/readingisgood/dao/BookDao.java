@@ -85,4 +85,9 @@ public class BookDao implements Dao<Book> {
             }
         });
     }
+
+    @Override
+    public void deleteAll() {
+        bookRepository.deleteAll();
+    }
 }

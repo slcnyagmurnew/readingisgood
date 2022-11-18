@@ -1,5 +1,6 @@
 package com.example.readingisgood.dao;
 
+import com.example.readingisgood.model.Book;
 import com.example.readingisgood.model.ERole;
 import com.example.readingisgood.model.Role;
 import com.example.readingisgood.model.User;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -91,5 +93,13 @@ public class CustomerDao {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return tokenUtil.generateJwtToken(authentication);
+    }
+
+    public void deleteAll() {
+        userRepository.deleteAll();
+    }
+
+    public Optional<User> get(String value) {
+        return userRepository.findByUsername(value);
     }
 }

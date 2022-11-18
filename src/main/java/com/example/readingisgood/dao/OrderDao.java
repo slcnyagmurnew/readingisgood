@@ -112,4 +112,9 @@ public class OrderDao implements Dao<Order> {
     public void update(Order order) {
         // no need but it is from dao interface
     }
+
+    @Override
+    public void deleteAll() {
+        orderRepository.deleteAll();
+    }
 }
