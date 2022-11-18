@@ -18,4 +18,6 @@ public interface Dao<T>{
 
     void update(T t); // update object in mongo db
 
+    void deleteAll();
+
 }
