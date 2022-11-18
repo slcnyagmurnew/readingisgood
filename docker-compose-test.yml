@@ -1,0 +1,32 @@
+version: '3'
+services:
+  database-rig-test:
+    image: 'mongo:4.4.6'
+    container_name: database-rig-test
+    environment:
+      - MONGO_INITDB_DATABASE=test
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    restart: always
+    ports:
+      - '27019:27017'
+    volumes:
+      - ./init-mongo-test.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+
+  database-rig-test-visualizer:
+    image: 'mongo-express'
+    container_name: database-rig-test-visualizer
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=database-rig-test
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_MONGODB_AUTH_DATABASE=admin
+      - ME_CONFIG_MONGODB_AUTH_USERNAME=admin
+      - ME_CONFIG_MONGODB_AUTH_PASSWORD=admin
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=admin
+    restart: always
+    ports:
+      - '8082:8081'
+    depends_on:
+      - database-rig-test
