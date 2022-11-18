@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Objects;
 
 @Document
 public class Order {
@@ -84,5 +85,18 @@ public class Order {
                 ", purchasedAmount=" + purchasedAmount +
                 ", orderDate=" + orderDate +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Order order = (Order) obj;
+        return Objects.equals(this.username, order.username) && Objects.equals(this.id, order.id) && Objects.equals(this.bookCount, order.bookCount)
+                && Objects.equals(this.books, order.books) && Objects.equals(this.purchasedAmount, order.purchasedAmount);
     }
 }

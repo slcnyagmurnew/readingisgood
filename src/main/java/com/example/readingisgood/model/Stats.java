@@ -3,6 +3,7 @@ package com.example.readingisgood.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.Month;
+import java.util.Objects;
 
 @Document
 public class Stats {
@@ -57,5 +58,18 @@ public class Stats {
      */
     public String numberToMonthName(int monthNumber) {
         return Month.of(monthNumber).name();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Stats stats = (Stats) obj;
+        return Objects.equals(this.id, stats.id) && Objects.equals(this.totalBookCount, stats.totalBookCount)
+                && Objects.equals(this.totalOrderCount, stats.totalOrderCount) && Objects.equals(this.totalPurchasedAmount, stats.totalPurchasedAmount);
     }
 }
