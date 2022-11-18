@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Document(collection = "user")
@@ -62,4 +63,29 @@ public class User {
     public void setUserRoles(Set<Role> userRoles) {
         this.userRoles = userRoles;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", userRoles=" + userRoles +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        User user = (User) obj;
+        return Objects.equals(this.username, user.username) && Objects.equals(this.password, user.password)
+                && Objects.equals(this.email, user.email) && Objects.equals(this.userRoles, user.userRoles);
+    }
 }
+
