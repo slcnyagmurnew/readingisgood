@@ -39,9 +39,9 @@ public class BookController {
             return new ResponseEntity<>(
                     "Book already exists! Try update the book stock.", HttpStatus.CONFLICT);
         } catch (IllegalArgumentException err) {
-            logger.error("Book name must not be null!");
+            logger.error(err.getMessage());
             return new ResponseEntity<>(
-                    "Book name must not be null!", HttpStatus.BAD_REQUEST);
+                    err.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 

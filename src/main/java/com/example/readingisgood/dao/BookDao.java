@@ -58,8 +58,10 @@ public class BookDao implements Dao<Book> {
     @Override
     public void save(Book o) throws DuplicateKeyException {
         if (o.getName() == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Book name must not be null!");
         }
+        if (o.getStock() < 0)
+            throw new IllegalArgumentException("Book stock should be greater than zero!");
         bookRepository.insert(o); // use NOT save to prevent duplication
     }
 
