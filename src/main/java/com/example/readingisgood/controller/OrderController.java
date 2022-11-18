@@ -2,7 +2,6 @@ package com.example.readingisgood.controller;
 
 import com.example.readingisgood.dao.OrderDao;
 import com.example.readingisgood.model.Order;
-import com.example.readingisgood.payload.MessageResponse;
 import com.example.readingisgood.payload.OrderRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +40,7 @@ public class OrderController {
      */
     @PostMapping("/add")
     @PreAuthorize("hasRole('USER')")
-    ResponseEntity<MessageResponse> addOrder(@Valid @RequestBody OrderRequest orderRequest) throws ParseException {
+    ResponseEntity<String> addOrder(@Valid @RequestBody OrderRequest orderRequest) throws ParseException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername(); // get username from context (login required)
 
@@ -50,16 +49,16 @@ public class OrderController {
             Order order = new Order(username, books, 0, 0, formatter.parse(String.valueOf(LocalDate.now())));
             orderDao.save(order);
             logger.info("Order saved successfully!");
-            return ResponseEntity.ok().body(new MessageResponse(String.format("Order saved successfully! %s", order)));
+            return ResponseEntity.ok().body("Order saved successfully!");
         } catch (NullPointerException err) {
             return ResponseEntity.badRequest().body( // can not order non-available book
-                    new MessageResponse("One of the books does not exists!"));
+                    "One of the books does not exists!");
         } catch (IllegalStateException err) {
             return new ResponseEntity<>( // can not order more than stock of the book
-                    new MessageResponse("One of the books has not enough stock!"), HttpStatus.UNPROCESSABLE_ENTITY);
+                    "One of the books has not enough stock!", HttpStatus.UNPROCESSABLE_ENTITY);
         } catch (IllegalArgumentException err) {
             return new ResponseEntity<>( // book count for order must be positive number
-                    new MessageResponse("One of the books does not have legal value!"), HttpStatus.BAD_REQUEST);
+                    "One of the books does not have legal value!", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -71,15 +70,15 @@ public class OrderController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('USER')")
-    ResponseEntity<MessageResponse> getOrder(@PathVariable String id) {
+    ResponseEntity<?> getOrder(@PathVariable String id) {
         Optional<Order> order = orderDao.get(id);
         if (order.isPresent()) { // check existence of order
             logger.info(String.format("Order information: %s", order.get()));
-            return new ResponseEntity<>(new MessageResponse(String.format("Order information: %s", order.get())), HttpStatus.OK);
+            return new ResponseEntity<>(order.get(), HttpStatus.OK);
         }
         else {
             logger.warn("Order not found!");
-            return new ResponseEntity<>(new MessageResponse("Order not found!"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Order not found!", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -94,6 +93,6 @@ public class OrderController {
     ResponseEntity<List<Order>> getOrdersByInterval(@Valid @RequestBody OrderRequest orderRequest) {
         List<Order> orderList = (List<Order>) orderDao.getOrdersByInterval(orderRequest.getStart(), orderRequest.getEnd());
         logger.info("Orders fetched successfully!");
-        return new ResponseEntity<>((orderList), HttpStatus.OK);
+        return new ResponseEntity<>(orderList, HttpStatus.OK);
     }
 }

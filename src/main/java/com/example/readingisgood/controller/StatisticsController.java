@@ -2,7 +2,6 @@ package com.example.readingisgood.controller;
 
 import com.example.readingisgood.dao.OrderDao;
 import com.example.readingisgood.model.Stats;
-import com.example.readingisgood.payload.MessageResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +38,7 @@ public class StatisticsController {
         List<Stats> stats = orderDao.getStatistics(username);
         if (stats.isEmpty()) { // check if user has no stats (no order)
             logger.warn(String.format("No statistics found for user %s", username));
-            return new ResponseEntity<>(new MessageResponse(String.format("No statistics found for user %s", username)), HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(String.format("No statistics found for user %s", username), HttpStatus.UNPROCESSABLE_ENTITY);
         }
         else {
             logger.info(String.format("Statistics fetched for user %s", username));

@@ -4,7 +4,6 @@ import com.example.readingisgood.dao.CustomerDao;
 import com.example.readingisgood.dao.OrderDao;
 import com.example.readingisgood.model.Order;
 import com.example.readingisgood.payload.LoginRequest;
-import com.example.readingisgood.payload.MessageResponse;
 import com.example.readingisgood.payload.SignUpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +42,7 @@ public class CustomerController {
 
         List<Order> orders = (List<Order>) orderDao.getAll(username);
         if (orders.isEmpty()) { // check if list is empty
-            return new ResponseEntity<>(new MessageResponse(String.format("There is no order belongs to user %s", username)), HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(String.format("There is no order belongs to user %s", username), HttpStatus.UNPROCESSABLE_ENTITY);
         }
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
@@ -55,15 +54,15 @@ public class CustomerController {
      * @return: success message and token if operation succeeded otherwise bad request
      */
     @PostMapping("/login")
-    public ResponseEntity<MessageResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<String> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         String jwt = customerDao.login(loginRequest);
         if (jwt != null) {
             logger.info("JWT created!");
-            return ResponseEntity.ok(new MessageResponse(jwt));
+            return ResponseEntity.ok(jwt);
         }
         else {
             logger.error("JWT can not be created!");
-            return new ResponseEntity<>(new MessageResponse("JWT can not be created!"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("JWT can not be created!", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -86,14 +85,14 @@ public class CustomerController {
      * Get request body via SignUpRequest class
      */
     @PostMapping("/signup")
-    public ResponseEntity<MessageResponse> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<String> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
         try {
             customerDao.signup(signUpRequest);
             logger.info("User registered successfully!");
-            return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+            return ResponseEntity.ok("User registered successfully!");
         } catch (DuplicateKeyException err) {
             logger.error(err.getMessage());
-            return new ResponseEntity<>(new MessageResponse(err.getMessage()), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(err.getMessage(), HttpStatus.CONFLICT);
         }
     }
 }
